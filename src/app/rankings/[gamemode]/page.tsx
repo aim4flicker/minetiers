@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import { GAMEMODES } from "@/lib/data"
+import { GAMEMODES, getPlayers } from "@/lib/data"
 import type { Gamemode } from "@/types"
 import GamemodeTabs from "@/components/GamemodeTabs"
 import RankingsTable from "@/components/RankingsTable"
@@ -8,6 +8,8 @@ import ServerInfo from "@/components/ServerInfo"
 interface Props {
   params: Promise<{ gamemode: string }>
 }
+
+export const dynamic = "force-dynamic"
 
 export async function generateStaticParams() {
   return GAMEMODES.map((m) => ({ gamemode: m.key }))
@@ -20,6 +22,8 @@ export default async function RankingsPage({ params }: Props) {
   if (!isValid) {
     redirect("/rankings/overall")
   }
+
+  const players = await getPlayers()
 
   return (
     <main className="w-full max-w-[1352px] min-h-screen mx-auto px-4">
@@ -37,7 +41,7 @@ export default async function RankingsPage({ params }: Props) {
           <ServerInfo />
         </div>
 
-        <RankingsTable gamemode={gamemode as Gamemode} />
+        <RankingsTable gamemode={gamemode as Gamemode} initialPlayers={players} />
       </div>
     </main>
   )

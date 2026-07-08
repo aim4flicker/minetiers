@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { players, GAMEMODES } from "@/lib/data"
+import { GAMEMODES } from "@/lib/data"
 import type { Gamemode, Player } from "@/types"
 import PlayerRow from "./PlayerRow"
 import SearchBar from "./SearchBar"
@@ -9,12 +9,15 @@ import PlayerModal from "./PlayerModal"
 
 interface RankingsTableProps {
   gamemode: Gamemode
+  initialPlayers: Player[]
 }
 
-export default function RankingsTable({ gamemode }: RankingsTableProps) {
+export default function RankingsTable({ gamemode, initialPlayers }: RankingsTableProps) {
   const [search, setSearch] = useState("")
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null)
   const [toast, setToast] = useState<{ type: "error" | "success"; message: string } | null>(null)
+
+  const players = initialPlayers
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim()
@@ -28,7 +31,7 @@ export default function RankingsTable({ gamemode }: RankingsTableProps) {
       .sort((a, b) => a.overall - b.overall)
     if (!q) return sorted
     return sorted.filter((p) => p.name.toLowerCase().includes(q))
-  }, [gamemode, search])
+  }, [gamemode, search, players])
 
   const handleSearchSubmit = (value: string) => {
     const q = value.trim().toLowerCase()
