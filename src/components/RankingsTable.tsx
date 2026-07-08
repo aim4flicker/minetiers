@@ -107,16 +107,19 @@ export default function RankingsTable({ gamemode, initialPlayers }: RankingsTabl
         <span className="w-[196px] shrink-0 text-right">Player</span>
         <span className="inline-block text-right ml-auto">Region</span>
         <span className="w-[340px] text-center ml-auto">
-          {GAMEMODES.map((m) => (
-            <span
-              key={m.key}
-              className={`inline-block w-6 text-center mx-1.5 ${
-                m.key === gamemode ? "text-accent" : ""
-              }`}
-            >
-              {m.label.slice(0, 2)}
-            </span>
-          ))}
+          {GAMEMODES.map((m) => {
+            const iconSrc = `/tier_icons/${m.key === "ltm" ? "2v2" : m.key}.svg`
+            return (
+              <span
+                key={m.key}
+                className={`inline-block w-6 text-center mx-1.5 ${
+                  m.key === gamemode ? "opacity-100" : "opacity-40"
+                }`}
+              >
+                <img src={iconSrc} alt={m.label} width={16} height={16} className="inline-block" />
+              </span>
+            )
+          })}
         </span>
       </div>
 

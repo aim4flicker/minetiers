@@ -3,6 +3,19 @@
 import type { Player, Gamemode } from "@/types"
 import { GAMEMODES } from "@/lib/data"
 
+const ICON_MAP: Record<string, string> = {
+  overall: "/tier_icons/overall.svg",
+  vanilla: "/tier_icons/vanilla.svg",
+  uhc: "/tier_icons/uhc.svg",
+  pot: "/tier_icons/pot.svg",
+  nethop: "/tier_icons/nethop.svg",
+  smp: "/tier_icons/smp.svg",
+  sword: "/tier_icons/sword.svg",
+  axe: "/tier_icons/axe.svg",
+  mace: "/tier_icons/mace.svg",
+  ltm: "/tier_icons/2v2.svg",
+}
+
 interface PlayerRowProps {
   player: Player
   rank: number
