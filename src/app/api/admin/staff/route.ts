@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server"
 import { createHash } from "crypto"
 import { decodeSessionToken } from "@/lib/auth"
-import { supabaseAdmin, supabase } from "@/lib/supabase"
-
-function getAdminClient() {
-  return supabaseAdmin ?? supabase
-}
+import { getSupabase, getAdminClient } from "@/lib/supabase"
 
 export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization")
@@ -14,7 +10,8 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const { data, error } = await supabase
+  const sb = getSupabase()
+  const { data, error } = await sb
     .from("staff_accounts")
     .select("id, username, role, created_at")
     .order("created_at", { ascending: true })
@@ -37,10 +34,6 @@ export async function POST(request: Request) {
   }
 
   const client = getAdminClient()
-  if (!client) {
-    return NextResponse.json({ error: "No write access configured" }, { status: 500 })
-  }
-
   const hash = createHash("sha256").update(password).digest("hex")
 
   const { data, error } = await client
@@ -70,10 +63,6 @@ export async function DELETE(request: Request) {
   }
 
   const client = getAdminClient()
-  if (!client) {
-    return NextResponse.json({ error: "No write access configured" }, { status: 500 })
-  }
-
   const { error } = await client.from("staff_accounts").delete().eq("id", id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 

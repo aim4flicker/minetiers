@@ -1,19 +1,37 @@
-import { createClient } from "@supabase/supabase-js"
+import { createClient, type SupabaseClient } from "@supabase/supabase-js"
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+let _supabase: SupabaseClient | null = null
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export function getSupabase(): SupabaseClient {
+  if (!_supabase) {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    if (!url || !key) throw new Error("Supabase env vars not configured")
+    _supabase = createClient(url, key)
+  }
+  return _supabase
+}
 
-export const supabaseAdmin = serviceRoleKey
-  ? createClient(supabaseUrl, serviceRoleKey, {
-      auth: { autoRefreshToken: false, persistSession: false },
-    })
-  : null
+let _admin: SupabaseClient | null = null
+let _adminFallback: SupabaseClient | null = null
+
+export function getAdminClient(): SupabaseClient {
+  if (!_admin) {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+    if (url && key) {
+      _admin = createClient(url, key, {
+        auth: { autoRefreshToken: false, persistSession: false },
+      })
+    } else {
+      _admin = getSupabase()
+    }
+  }
+  return _admin
+}
 
 export async function fetchPlayers() {
-  const { data: players, error } = await supabase
+  const { data: players, error } = await getSupabase()
     .from("players")
     .select("*")
     .order("created_at", { ascending: true })
@@ -23,7 +41,7 @@ export async function fetchPlayers() {
 }
 
 export async function fetchPlayerTiers() {
-  const { data: tiers, error } = await supabase
+  const { data: tiers, error } = await getSupabase()
     .from("player_tiers")
     .select("*")
 

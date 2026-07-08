@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server"
 import { decodeSessionToken } from "@/lib/auth"
-import { supabaseAdmin, supabase } from "@/lib/supabase"
+import { getSupabase, getAdminClient } from "@/lib/supabase"
 import { rankPlayers } from "@/lib/tiers"
-
-function getAdminClient() {
-  return supabaseAdmin ?? supabase
-}
 
 export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization")
@@ -13,14 +9,15 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const { data: players, error } = await supabase
+  const sb = getSupabase()
+  const { data: players, error } = await sb
     .from("players")
     .select("*")
     .order("created_at", { ascending: true })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-  const { data: tiers } = await supabase
+  const { data: tiers } = await sb
     .from("player_tiers")
     .select("*")
 
@@ -58,10 +55,6 @@ export async function POST(request: Request) {
   }
 
   const client = getAdminClient()
-  if (!client) {
-    return NextResponse.json({ error: "No write access configured" }, { status: 500 })
-  }
-
   const { data: player, error: playerError } = await client
     .from("players")
     .insert({
@@ -97,10 +90,11 @@ export async function POST(request: Request) {
   const allPlayers = await fetchAllPlayers(client)
   const rankings = rankPlayers(allPlayers)
 
+  const sb = getSupabase()
   for (const p of allPlayers) {
     const r = rankings.get(p.id)
     if (r) {
-      await supabase.from("players").update({
+      await sb.from("players").update({
         overall: r.overall,
         points: r.points,
       }).eq("id", p.id)
@@ -124,10 +118,6 @@ export async function PUT(request: Request) {
   }
 
   const client = getAdminClient()
-  if (!client) {
-    return NextResponse.json({ error: "No write access configured" }, { status: 500 })
-  }
-
   const updates: Record<string, unknown> = {}
   if (name !== undefined) updates.name = name
   if (uuid !== undefined) updates.uuid = uuid
@@ -155,10 +145,11 @@ export async function PUT(request: Request) {
   const allPlayers = await fetchAllPlayers(client)
   const rankings = rankPlayers(allPlayers)
 
+  const sb = getSupabase()
   for (const p of allPlayers) {
     const r = rankings.get(p.id)
     if (r) {
-      await supabase.from("players").update({
+      await sb.from("players").update({
         overall: r.overall,
         points: r.points,
       }).eq("id", p.id)
@@ -181,9 +172,6 @@ export async function DELETE(request: Request) {
   }
 
   const client = getAdminClient()
-  if (!client) {
-    return NextResponse.json({ error: "No write access configured" }, { status: 500 })
-  }
 
   await client.from("player_tiers").delete().eq("player_id", id)
   const { error } = await client.from("players").delete().eq("id", id)
@@ -193,10 +181,11 @@ export async function DELETE(request: Request) {
   const allPlayers = await fetchAllPlayers(client)
   const rankings = rankPlayers(allPlayers)
 
+  const sb = getSupabase()
   for (const p of allPlayers) {
     const r = rankings.get(p.id)
     if (r) {
-      await supabase.from("players").update({
+      await sb.from("players").update({
         overall: r.overall,
         points: r.points,
       }).eq("id", p.id)
@@ -206,7 +195,7 @@ export async function DELETE(request: Request) {
   return NextResponse.json({ success: true })
 }
 
-async function fetchAllPlayers(client: NonNullable<typeof supabaseAdmin> | typeof supabase) {
+async function fetchAllPlayers(client: ReturnType<typeof getAdminClient>) {
   const { data: players } = await client
     .from("players")
     .select("*")

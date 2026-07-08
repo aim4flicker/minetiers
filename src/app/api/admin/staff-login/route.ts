@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { createHash } from "crypto"
 import { createSessionToken } from "@/lib/auth"
-import { supabase } from "@/lib/supabase"
+import { getSupabase } from "@/lib/supabase"
 
 export async function POST(request: Request) {
   const { username, password } = await request.json()
@@ -10,7 +10,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Username and password required" }, { status: 400 })
   }
 
-  const { data, error } = await supabase
+  const sb = getSupabase()
+  const { data, error } = await sb
     .from("staff_accounts")
     .select("*")
     .eq("username", username.toLowerCase())
