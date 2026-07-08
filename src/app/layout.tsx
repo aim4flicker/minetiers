@@ -23,8 +23,8 @@ export default function RootLayout({
         <Navbar />
         <div aria-hidden className="pt-8" />
         {children}
-        <footer className="w-full py-12 mt-24">
-          <div className="text-center text-muted-foreground text-sm">
+        <footer className="w-full h-fit p-12 bg-layout-section mt-24">
+          <div className="text-2xl text-slate-400 text-center">
             Copyrights &copy; Minetiers 2025
           </div>
         </footer>

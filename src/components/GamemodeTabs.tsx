@@ -21,30 +21,27 @@ const GAMEMODE_ICONS: Record<string, string> = {
 
 export default function GamemodeTabs({ active }: GamemodeTabsProps) {
   return (
-    <section className="flex gap-1 overflow-x-auto overflow-y-hidden">
-      {GAMEMODES.map((mode) => {
+    <section className="w-full flex gap-1 absolute top-auto bottom-full left-0 overflow-x-auto overflow-y-hidden">
+      {GAMEMODES.map((mode, i) => {
         const isActive = mode.key === active
         return (
           <Link
             key={mode.key}
             href={`/rankings/${mode.key}`}
-            className={`shrink-0 flex flex-col items-center justify-end rounded-t-2xl border border-border px-6 pt-2 pb-1 transition-all duration-100 ${
+            style={{ transform: "translateY(50px)" }}
+            className={`w-28 h-fit duration-100 text-nowrap relative flex flex-col items-center justify-end rounded-t-3xl border-2 border-b-none border-border px-8 pt-1 ${
               isActive
-                ? "bg-card border-b-0 text-foreground"
-                : "text-muted-foreground/40 hover:text-muted-foreground hover:bg-accent/10"
+                ? "bg-accent/50 text-foreground"
+                : "text-muted-foreground/40 hover:bg-accent/50 hover:text-accent-foreground active:bg-accent/20"
             }`}
           >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className={isActive ? "text-accent" : ""}
-            >
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
               <path d={GAMEMODE_ICONS[mode.key]} />
             </svg>
-            <span className="text-xs font-semibold capitalize mt-1">{mode.label}</span>
-            {isActive && <span className="w-full h-0.5 bg-accent mt-1" />}
+            <strong className="capitalize text-sm">{mode.label}</strong>
+            {isActive && (
+              <span className="w-full h-0.5 bg-white block absolute bottom-0 left-0" />
+            )}
           </Link>
         )
       })}

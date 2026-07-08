@@ -13,6 +13,7 @@
   --color-secondary: #1a1a2e;
   --color-secondary-foreground: #d1d5db;
   --color-destructive: #ef4444;
+  --color-layout-section: #0d0d1a;
 }
 
 * {

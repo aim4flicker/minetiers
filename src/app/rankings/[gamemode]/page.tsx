@@ -1,8 +1,9 @@
-import { notFound, redirect } from "next/navigation"
+import { redirect } from "next/navigation"
 import { GAMEMODES } from "@/lib/data"
 import type { Gamemode } from "@/types"
 import GamemodeTabs from "@/components/GamemodeTabs"
 import RankingsTable from "@/components/RankingsTable"
+import ServerInfo from "@/components/ServerInfo"
 
 interface Props {
   params: Promise<{ gamemode: string }>
@@ -21,26 +22,19 @@ export default async function RankingsPage({ params }: Props) {
   }
 
   return (
-    <main className="w-full max-w-[1352px] mx-auto min-h-screen px-4">
-      <div className="w-full rounded-xl bg-card border border-border mt-8 rounded-tl-none p-6 pt-3 relative">
+    <main className="w-full max-w-[1352px] min-h-screen mx-auto px-4">
+      <div className="w-full h-fit rounded-xl bg-card border-2 border-border mt-28 rounded-tl-none p-8 pt-2 relative">
         <GamemodeTabs active={gamemode as Gamemode} />
 
-        <div className="flex items-center gap-3 justify-end mb-4 mt-2">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-accent">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-              </svg>
-            </div>
-            <div>
-              <p className="text-xs font-bold uppercase text-muted-foreground">Server IP</p>
-              <div className="flex items-center gap-1">
-                <span className="text-xs bg-secondary text-secondary-foreground font-semibold rounded-md px-2 py-1">
-                  play.minetiers.com
-                </span>
-              </div>
-            </div>
-          </div>
+        <div className="flex items-center gap-4 justify-end mb-4">
+          <button className="inline-flex items-center gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 text-sm font-medium rounded-md h-9 px-3 py-2 transition-colors">
+            <svg width="16" height="16" viewBox="0 0 512 512" fill="currentColor">
+              <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336l24 0 0-64-24 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 88 8 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" />
+            </svg>
+            Information
+          </button>
+
+          <ServerInfo />
         </div>
 
         <RankingsTable gamemode={gamemode as Gamemode} />

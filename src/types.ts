@@ -10,11 +10,21 @@ export type Gamemode =
   | "mace"
   | "ltm"
 
+export interface PlayerTier {
+  gamemode: Gamemode
+  tier: string
+}
+
 export interface Player {
   id: string
   name: string
-  region: "NA" | "EU" | "ASIA" | "OCE" | "SA"
-  tiers: Record<Gamemode, number>
+  uuid?: string
+  region: string
+  avatar: string
+  overall: number
+  points?: number
+  gamemodes: PlayerTier[]
+  desc?: string
 }
 
 export interface GamemodeInfo {
